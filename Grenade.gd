@@ -16,6 +16,9 @@ func _process(_delta: float) -> void:
 	$Label.text = str(ceil($Timer.time_left))
 
 func _physics_process(_delta) -> void:
+	if $Timer.time_left <= 0:
+		# We're exploding. Don't move.
+		return
 	# Apply gravity
 	# `max(_, 1)` to avoid devision by `0`
 	_dir.y += GRAVITY / max(_dir.length(), 1)
@@ -64,5 +67,14 @@ func do_steps() -> void:
 func _on_Timer_timeout() -> void:
 	# Tell the map to make a hole
 	$"../Map".explosion(position, 30)
+	# Hide ourselves
+	$Label.visible = false
+	$Sprite.visible = false
+	# Show the explosioin animation
+	$Explosion.visible = true
+	$Explosion.play("default")
+
+# Exploded.
+func _on_Explosion_animation_finished() -> void:
 	# Remove this grenade
 	queue_free()

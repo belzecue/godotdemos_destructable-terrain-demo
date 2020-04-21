@@ -4,6 +4,7 @@ This Script manages the map/terrain.
 extends Node2D
 
 onready var fg = $FG
+onready var bg = $BG
 
 const TRANSPARENT := Color(0,0,0,0)
 
@@ -24,6 +25,8 @@ func _generate_map() -> void:
 	# Get the texture data and lock it (to allow editing)
 	var fg_data = fg.texture.get_data()
 	fg_data.lock()
+	var bg_data = bg.texture.get_data()
+	bg_data.lock()
 	# Generate some Noise for the height map
 	var noise = OpenSimplexNoise.new()
 	noise.seed = randi()
@@ -40,8 +43,11 @@ func _generate_map() -> void:
 		for y in range(high):
 			# All pixels between 0 and `high` get set to TRANSPARENT
 			fg_data.set_pixelv(Vector2(x,y), TRANSPARENT)
+			bg_data.set_pixelv(Vector2(x,y), TRANSPARENT)
 	fg_data.unlock() # Unlock the data since we're done with editing it
 	fg.texture.set_data(fg_data) # Set the new data as the texture
+	bg_data.unlock() # Unlock the data since we're done with editing it
+	bg.texture.set_data(bg_data) # Set the new data as the texture
 
 
 # Create a circle-shaped hole at the position
@@ -62,6 +68,24 @@ func explosion(pos: Vector2, radius: int) -> void:
 			if pixel.y < 0 or pixel.y >= fg_data.get_height():
 				continue # Outside the map
 			fg_data.set_pixelv(pixel, TRANSPARENT) # Set pixel transparent
+	radius -= 10  # Use a smaller radius for the hole in the background
+	# The rest is the same as for the foreground
+	var bg_data = bg.texture.get_data()
+	bg_data.lock()
+	for x in range(-radius, radius + 1):
+		for y in range(-radius, radius + 1):
+			# Loop over a square shape
+			if Vector2(x, y).length() > radius:
+				# Filter out the corners to leave the circle in the middle
+				continue
+			var pixel = pos + Vector2(x,y) # Move the circle to `pos`
+			if pixel.x < 0 or pixel.x >= bg_data.get_width():
+				continue # Outside the map
+			if pixel.y < 0 or pixel.y >= bg_data.get_height():
+				continue # Outside the map
+			bg_data.set_pixelv(pixel, TRANSPARENT) # Set pixel transparent
 	# Lock the graphics and use them
 	fg_data.unlock()
 	fg.texture.set_data(fg_data)
+	bg_data.unlock()
+	bg.texture.set_data(bg_data)
