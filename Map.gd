@@ -13,6 +13,11 @@ var line := []
 func _ready() -> void:
 	randomize()		# Generate a new random seed
 	_generate_map() # Generate a "map"
+	$Collision.init_map(line) # Initialize the "map" for collision
+
+# Returns the surface normal for a position
+func collision_normal(pos: Vector2) -> Vector2:
+	return $Collision.collision_normal(pos) # $Collision implements this
 
 # Generates a random map
 func _generate_map() -> void:
