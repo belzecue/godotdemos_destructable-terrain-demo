@@ -43,5 +43,14 @@ func collision_normal(pos: Vector2) -> Vector2:
 	if collision[pos.x][pos.y]:
 		# Solid pixel, return random non-zero Vector
 		return Vector2.ONE
-	# Air pixel, return no normal.
-	return Vector2.ZERO
+	var normal := Vector2.ZERO
+	for direction in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]:
+		# Check the 4 pixels directly adjecent.
+		var observed_pixel = pos + direction
+		if (observed_pixel.x < 0		  # Left edge
+			or observed_pixel.x >= WIDTH  # Right edge
+			or observed_pixel.y < 0		  # Top edge
+			or observed_pixel.y >= HEIGHT # Bottom edge
+			or collision[observed_pixel.x][observed_pixel.y]): # Solid terrain
+			normal += direction * -1 # Point the normal the opposite way
+	return normal.normalized() # Normalize the normal

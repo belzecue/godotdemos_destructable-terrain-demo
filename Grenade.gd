@@ -34,9 +34,16 @@ func do_steps() -> void:
 		var normal = $"../Map".collision_normal(new_position)      # Get the normal of the new position
 		velocity.y -= min(1.0, abs(velocity.y)) * sign(velocity.y) # Update `velocity` to the remaining steps
 		if normal == Vector2.ONE:
-			# We collided; Don't move more
+			# We are inside a wall; Don't move more
 			break
-		# No collision, move to the new position
+		if sign(normal.y) != 0 and sign(_dir.y) != sign(normal.y):
+			# We bounce on the y-Axis
+			_dir.y *= -0.5   # Use `-0.5` instead of `-1` to simulate friction
+			velocity.y *= -0.5
+		if sign(normal.x) != 0 and sign(_dir.x) != sign(normal.x):
+			# We bounce on the x-Axis
+			_dir.x *= -0.8
+			velocity.x *= -0.8
 		position = new_position
 	# Movement on the x-Axis is the same as on the y-Axis above
 	while abs(velocity.x) > 0:
@@ -45,6 +52,12 @@ func do_steps() -> void:
 		velocity.x -= min(1.0, abs(velocity.x)) * sign(velocity.x)
 		if normal == Vector2.ONE:
 			break
+		if sign(normal.y) != 0 and sign(_dir.y) != sign(normal.y):
+			_dir.y *= -0.5
+			velocity.y *= -0.5
+		if sign(normal.x) != 0 and sign(_dir.x) != sign(normal.x):
+			_dir.x *= -0.8
+			velocity.x *= -0.8
 		position = new_position
 
 # Explode!
