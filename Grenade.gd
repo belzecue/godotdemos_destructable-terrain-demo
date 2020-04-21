@@ -62,5 +62,7 @@ func do_steps() -> void:
 
 # Explode!
 func _on_Timer_timeout() -> void:
+	# Tell the map to make a hole
+	$"../Map".explosion(position, 30)
 	# Remove this grenade
 	queue_free()

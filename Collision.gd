@@ -54,3 +54,18 @@ func collision_normal(pos: Vector2) -> Vector2:
 			or collision[observed_pixel.x][observed_pixel.y]): # Solid terrain
 			normal += direction * -1 # Point the normal the opposite way
 	return normal.normalized() # Normalize the normal
+
+# Create a circle-shaped hole at the position
+func explosion(pos: Vector2, radius: int) -> void:
+	for x in range(-radius, radius + 1):
+		for y in range(-radius, radius + 1):
+			# We're looping over a square
+			if Vector2(x, y).length() > radius:
+				# Filter out when we're too far from the center
+				continue
+			var pixel = pos + Vector2(x,y) # Move the circle to `pos`
+			if pixel.x < 0 or pixel.x >= WIDTH:
+				continue # Not on the map
+			if pixel.y < 0 or pixel.y >= HEIGHT:
+				continue # Not on the map
+			collision[pixel.x][pixel.y] = false # Set the pixel to air

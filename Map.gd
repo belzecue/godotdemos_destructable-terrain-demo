@@ -42,3 +42,26 @@ func _generate_map() -> void:
 			fg_data.set_pixelv(Vector2(x,y), TRANSPARENT)
 	fg_data.unlock() # Unlock the data since we're done with editing it
 	fg.texture.set_data(fg_data) # Set the new data as the texture
+
+
+# Create a circle-shaped hole at the position
+func explosion(pos: Vector2, radius: int) -> void:
+	$Collision.explosion(pos, radius) # Tell the collision map to explode, too
+	# Get and lock the graphics
+	var fg_data = fg.texture.get_data()
+	fg_data.lock()
+	for x in range(-radius, radius + 1):
+		for y in range(-radius, radius + 1):
+			# Loop over a square shape
+			if Vector2(x, y).length() > radius:
+				# Filter out the corners to leave the circle in the middle
+				continue
+			var pixel = pos + Vector2(x,y) # Move the circle to `pos`
+			if pixel.x < 0 or pixel.x >= fg_data.get_width():
+				continue # Outside the map
+			if pixel.y < 0 or pixel.y >= fg_data.get_height():
+				continue # Outside the map
+			fg_data.set_pixelv(pixel, TRANSPARENT) # Set pixel transparent
+	# Lock the graphics and use them
+	fg_data.unlock()
+	fg.texture.set_data(fg_data)
