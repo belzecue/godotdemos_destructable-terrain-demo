@@ -4,8 +4,19 @@ This one uses janky physics :)
 """
 extends Node2D
 
+var Grenade = load("res://Grenade.tscn")
+
 var jump = 0 	 # int to keep track of how many frames we're in the air
 var jump_dir = 0 # direction of the jump on the x-Axis (-1, 0, 1)
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:  # A mouse button was pressed
+		var grenade = Grenade.instance()	# Get a new grenade
+		grenade.position = position + Vector2.UP * 12 # Position it 12px above our origin
+		# `grenade.init()` takes as argument the direction that the grenade will fly in
+		# we subtract the grenades global position from the mouse global position to get that
+		grenade.init(get_global_mouse_position() - global_position + Vector2.UP * 12)
+		get_parent().add_child(grenade) # Finally add the grenade as a child of our parent (`Main`)
 
 # Called every physics frame.
 func _physics_process(_delta: float) -> void:
