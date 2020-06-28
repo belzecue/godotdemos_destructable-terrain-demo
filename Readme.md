@@ -19,3 +19,8 @@ In short, here are the steps to follow:
 3. Write your own physics engine.
     1. Calculate the normals for each pixel based upon its surroundings.
     2. Apply forces to moving objects.
+
+## License
+
+The code is [licensed](LICENSE) under [The Unlicense](https://unlicense.org/).
+Basically, you can do whatever you want with the code.
